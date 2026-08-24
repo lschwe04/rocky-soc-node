@@ -1,9 +1,9 @@
 [Interface]
 PrivateKey = {{ wg_node_privkey }}
-Address = {{ node_wg_ip }}/24
+Address = 10.100.0.1/24
 
 [Peer]
 PublicKey = {{ wg_server_pubkey }}
 Endpoint = {{ soc_hub_wg_ip }}:{{ wg_port }}
-AllowedIPs = 10.10.0.0/24
+AllowedIPs = 10.100.0.2/32
 PersistentKeepalive = 25
