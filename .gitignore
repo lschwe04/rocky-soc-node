@@ -1,0 +1,6 @@
+# SSH & WireGuard Keys ausschließen
+*.key
+*.pem
+.vagrant/
+.ansible/
+*.retry
