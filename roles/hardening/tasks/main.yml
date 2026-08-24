@@ -1,0 +1,4 @@
+---
+- name: Apply CIS Level 1 Hardening via Ansible-Lockdown
+  include_role:
+    name: ansible-lockdown.rhel9_cis

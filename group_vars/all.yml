@@ -1,0 +1,10 @@
+---
+# WireGuard & SOC Hub Konfiguration
+soc_hub_wg_ip: "10.10.0.1"       # Die VPN-IP deines SOC-Hubs
+node_wg_ip: "10.10.0.2"          # Die VPN-IP für diesen Node
+wg_server_pubkey: "pPVhqlJ3iINNl0lzZ/EBI8HC/Mm7jvYzuqIN7v8GWQg="
+wg_node_privkey: "aHDTW1eSrYLLRKkacjqqDSGxjsC242wUm1I1J63tFGU="
+
+# CIS-Härtungs-Optionen (Ansible-Lockdown)
+rhel9_cis_level_1: true
+rhel9_cis_time_servers: ["pool.ntp.org"]

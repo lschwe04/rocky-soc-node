@@ -1,0 +1,26 @@
+---
+- name: Install WireGuard and tools
+  dnf:
+    name:
+      - wireguard-tools
+      - iptables
+    state: present
+
+- name: Ensure wireguard configuration directory exists
+  file:
+    path: /etc/wireguard
+    state: directory
+    mode: '0700'
+
+- name: Deploy WireGuard client configuration
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: '0600'
+  notify: restart wireguard
+
+- name: Enable and start WireGuard service
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started

@@ -1,0 +1,9 @@
+---
+- hosts: soc_nodes
+  become: true
+  gather_facts: true
+  roles:
+    - role: hardening
+    - role: wireguard
+    - role: monitoring
+
