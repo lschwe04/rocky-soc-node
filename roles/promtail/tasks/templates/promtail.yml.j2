@@ -1,0 +1,28 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/log/positions.yaml
+
+clients:
+  - url: http://{{ soc_hub_wg_ip }}:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        job: varlogs
+        host: {{ ansible_hostname }}
+        __path__: /var/log/messages
+
+  - job_name: auditd
+    static_configs:
+    - targets:
+        - localhost
+      labels:
+        job: auditd
+        host: {{ ansible_hostname }}
+        __path__: /var/log/audit/audit.log

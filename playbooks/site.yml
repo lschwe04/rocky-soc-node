@@ -6,4 +6,5 @@
     - role: hardening
     - role: wireguard
     - role: monitoring
-
+    - role: promtail
+    - role: fail2ban
