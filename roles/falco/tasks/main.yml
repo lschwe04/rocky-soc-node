@@ -65,3 +65,19 @@
     enabled: true
     state: started
     daemon_reload: true
+
+- name: Install Falcosidekick for Alert Routing
+  ansible.builtin.dnf:
+    name: falcosidekick
+    state: present
+
+# FIX: Alert-Weiterleitung strukturiert an den Hub Alertmanager binden
+- name: Configure Falcosidekick Alertmanager Webhook
+  ansible.builtin.copy:
+    dest: /etc/falcosidekick/falcosidekick.yaml
+    content: |
+      alertmanager:
+        hostport: "http://{{ soc_hub_wg_ip }}:5001"
+        minimumpriority: "warning"
+    mode: '0640'
+  notify: restart falcosidekick
