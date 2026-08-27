@@ -2,29 +2,66 @@
 - name: Import Falco GPG key
   ansible.builtin.rpm_key:
     state: present
-    key: [https://falco.org/repo/falcosecurity-packages.asc]
+    key: https://falco.org/repo/falcosecurity-packages.asc
 
 - name: Add Falco repository
   ansible.builtin.yum_repository:
     name: falcosecurity
     description: Falco Repository
-    baseurl: [https://download.falco.org/packages/rpm]
+    baseurl: https://download.falco.org/packages/rpm
     gpgcheck: yes
 
-- name: Install Falco packages
+- name: Install Falco engine and eBPF dependencies
   ansible.builtin.dnf:
-    name: falco
+    name:
+      - falco
+      - bpftool
     state: present
 
-- name: Configure Falco to use modern eBPF probe
+- name: Configure Falco for modern eBPF driver
   ansible.builtin.replace:
     path: /etc/falco/falco.yaml
     regexp: 'engine:\n  kind: module'
     replace: 'engine:\n  kind: modern_ebpf'
   notify: restart falco
 
-- name: Enable and start Falco eBPF service
+- name: Deploy Falco Custom Threat Detection Rules
+  ansible.builtin.template:
+    src: falco_rules.local.yaml.j2
+    dest: /etc/falco/falco_rules.local.yaml
+    owner: root
+    group: root
+    mode: '0640'
+  notify: restart falco
+
+- name: Ensure Systemd Service Override directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/falco.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Enterprise Systemd Hardening Service Override for Falco
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/falco.service.d/override.conf
+    content: |
+      [Service]
+      NoNewPrivileges=true
+      ProtectSystem=full
+      ProtectHome=read-only
+      PrivateTmp=true
+      ProtectClock=yes
+      ProtectHostname=yes
+      RestrictRealtime=yes
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart falco
+
+- name: Enable and start Falco service
   ansible.builtin.systemd:
     name: falco
     enabled: true
     state: started
+    daemon_reload: true

@@ -1,0 +1,21 @@
+- rule: Terminal Shell in SOC Container or Host
+  desc: Detect interactive shell spawned on SOC Node
+  condition: >
+    spawned_process and
+    shell_procs and not user_known_standby_find_configs
+  output: >
+    Interactive shell spawned (user=%user.name user_loginuid=%user.loginuid
+    process=%proc.name parent=%proc.pname command=%proc.cmdline)
+  priority: WARNING
+  tags: [shell, execution]
+
+- rule: Unauthorized Privileged Credential Read
+  desc: Detect unauthorized access to sensitive credential stores
+  condition: >
+    open_read and
+    (fd.name=/etc/shadow or fd.name=/etc/sudoers) and
+    not proc.name in (passwd, shadow, useradd, groupadd, su, sudo, ansible-ansible)
+  output: >
+    Sensitive credential file opened for reading (user=%user.name command=%proc.cmdline file=%fd.name)
+  priority: CRITICAL
+  tags: [security, credentials]

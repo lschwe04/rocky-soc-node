@@ -1,3 +1,4 @@
 ---
+# Vault Secrets (Verschlüsseln mit: ansible-vault encrypt)
 vault_wg_server_pubkey: "pPVhqlJ3iINNl0lzZ/EBI8HC/Mm7jvYzuqIN7v8GWQg="
 vault_wg_node_privkey: "aHDTW1eSrYLLRKkacjqqDSGxjsC242wUm1I1J63tFGU="

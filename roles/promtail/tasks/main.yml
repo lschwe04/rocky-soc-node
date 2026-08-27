@@ -17,7 +17,7 @@
 
 - name: Download Promtail binary
   ansible.builtin.get_url:
-    url: "[https://github.com/grafana/loki/releases/download/v2.9.4/promtail-linux-amd64.zip](https://github.com/grafana/loki/releases/download/v2.9.4/promtail-linux-amd64.zip)"
+    url: "https://github.com/grafana/loki/releases/download/v2.9.4/promtail-linux-amd64.zip"
     dest: "/tmp/promtail.zip"
     mode: '0644'
 
@@ -66,15 +66,16 @@
     dest: /etc/systemd/system/promtail.service
     content: |
       [Unit]
-      Description=Promtail Log Collector
+      Description=Promtail Log Collector Agent
       After=network.target
 
       [Service]
       User=promtail
       ExecStart=/usr/local/bin/promtail -config.file=/etc/promtail/promtail.yml
       Restart=always
+      RestartSec=5s
 
-      # Enterprise Hardening
+      # Enterprise Sandbox Hardening
       ProtectSystem=strict
       ProtectHome=yes
       PrivateTmp=yes
@@ -84,8 +85,13 @@
       ProtectControlGroups=yes
       RestrictRealtime=yes
       MemoryDenyWriteExecute=yes
-      # Schreibzugriff nur auf Position-File, Lesen über System
+      CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_SYSLOG
+      ProtectClock=yes
+      ProtectHostname=yes
+      LockPersonality=yes
+      RestrictSUIDSGID=yes
       ReadWritePaths=/var/log/positions.yaml
+      ReadOnlyPaths=/var/log
 
       [Install]
       WantedBy=multi-user.target
