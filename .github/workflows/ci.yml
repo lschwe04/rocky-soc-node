@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  ansible-lint:
+  ansible-security:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -18,10 +18,18 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install Ansible-Lint
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ansible-lint
+          pip install ansible-lint checkov
 
       - name: Run Ansible Lint
         run: ansible-lint playbooks/site.yml
+
+      # FIX: SAST Security Scanning für Playbooks und Systemd-Templates
+      - name: Checkov Ansible Security Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: playbooks
+          framework: ansible
+          soft_fail: false
