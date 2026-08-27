@@ -4,6 +4,7 @@ Address = {{ node_wg_ip }}/24
 
 [Peer]
 PublicKey = {{ wg_server_pubkey }}
-Endpoint = {{ soc_hub_wg_ip }}:{{ wg_port }}
+# FIX: Dynamisches Inventar nutzt jetzt zwingend die externe Host-IP des SOC-Hubs statt der internen VPN-IP
+Endpoint = {{ hostvars['soc_server']['ansible_host'] }}:{{ wg_port }}
 AllowedIPs = 10.100.0.0/24
 PersistentKeepalive = 25
