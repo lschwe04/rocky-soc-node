@@ -4,7 +4,6 @@ Address = {{ node_wg_ip }}/24
 
 [Peer]
 PublicKey = {{ wg_server_pubkey }}
-# FIX: Dynamisches Endpunkt-Routing über die öffentliche Host-IP des Hub-Servers aus dem Inventory
-Endpoint = {{ hostvars['soc_server']['ansible_host'] }}:{{ wg_port }}
+Endpoint = {{ soc_hub_public_ip }}:{{ wg_port }}
 AllowedIPs = 10.100.0.0/24
 PersistentKeepalive = 25
