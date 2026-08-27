@@ -17,7 +17,7 @@
 
 - name: Download Promtail binary
   ansible.builtin.get_url:
-    url: "https://github.com/grafana/loki/releases/download/v2.9.4/promtail-linux-amd64.zip"
+    url: "[https://github.com/grafana/loki/releases/download/v2.9.4/promtail-linux-amd64.zip](https://github.com/grafana/loki/releases/download/v2.9.4/promtail-linux-amd64.zip)"
     dest: "/tmp/promtail.zip"
     mode: '0644'
 
@@ -46,6 +46,14 @@
     state: directory
     mode: '0755'
 
+- name: Create empty positions file to fix permissions early
+  ansible.builtin.file:
+    path: /var/log/positions.yaml
+    state: touch
+    owner: promtail
+    group: promtail
+    mode: '0644'
+
 - name: Deploy Promtail configuration
   ansible.builtin.template:
     src: promtail.yml.j2
@@ -53,7 +61,7 @@
     mode: '0644'
   notify: restart promtail
 
-- name: Deploy Promtail systemd service
+- name: Deploy Promtail systemd service with Hardening
   ansible.builtin.copy:
     dest: /etc/systemd/system/promtail.service
     content: |
@@ -62,9 +70,22 @@
       After=network.target
 
       [Service]
-      User=root
+      User=promtail
       ExecStart=/usr/local/bin/promtail -config.file=/etc/promtail/promtail.yml
       Restart=always
+
+      # Enterprise Hardening
+      ProtectSystem=strict
+      ProtectHome=yes
+      PrivateTmp=yes
+      NoNewPrivileges=yes
+      ProtectKernelTunables=yes
+      ProtectKernelModules=yes
+      ProtectControlGroups=yes
+      RestrictRealtime=yes
+      MemoryDenyWriteExecute=yes
+      # Schreibzugriff nur auf Position-File, Lesen über System
+      ReadWritePaths=/var/log/positions.yaml
 
       [Install]
       WantedBy=multi-user.target

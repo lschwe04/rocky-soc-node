@@ -1,0 +1,30 @@
+---
+- name: Import Falco GPG key
+  ansible.builtin.rpm_key:
+    state: present
+    key: [https://falco.org/repo/falcosecurity-packages.asc]
+
+- name: Add Falco repository
+  ansible.builtin.yum_repository:
+    name: falcosecurity
+    description: Falco Repository
+    baseurl: [https://download.falco.org/packages/rpm]
+    gpgcheck: yes
+
+- name: Install Falco packages
+  ansible.builtin.dnf:
+    name: falco
+    state: present
+
+- name: Configure Falco to use modern eBPF probe
+  ansible.builtin.replace:
+    path: /etc/falco/falco.yaml
+    regexp: 'engine:\n  kind: module'
+    replace: 'engine:\n  kind: modern_ebpf'
+  notify: restart falco
+
+- name: Enable and start Falco eBPF service
+  ansible.builtin.systemd:
+    name: falco
+    enabled: true
+    state: started

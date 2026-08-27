@@ -8,3 +8,4 @@
     - role: monitoring
     - role: promtail
     - role: fail2ban
+    - role: falco
